@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
 
-class AppButton extends StatelessWidget {
-  const AppButton({super.key});
+class AppCard extends StatelessWidget {
+  final GestureLongPressCallback? onLongPress;
+  final Border? border;
+  final GestureTapCallback? onTap;
+  final Widget child;
+  final Color? color;
+  final double? hight;
+  final double? width;
+  const AppCard({
+    super.key,
+    this.color,
+    this.hight,
+    this.width,
+    required this.child,
+    this.onTap,
+    this.border,
+    this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: onLongPress,
+      onTap: onTap,
       child: Container(
-        height: 52,
-        width: 293,
+        height: hight,
+        width: width,
         decoration: BoxDecoration(
-          color: Color.fromRGBO(13, 7, 130, 100),
+          color: color,
           borderRadius: BorderRadius.circular(10),
+          border: border,
         ),
-        child: Center(child: Text('Card')),
+        child: Center(child: child),
       ),
     );
   }
