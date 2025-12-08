@@ -1,6 +1,6 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/screens/login_page.dart';
+import 'package:edu_trak/screens/auth_screens/login_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       resizeToAvoidBottomInset: false,
 
       body: SizedBox(

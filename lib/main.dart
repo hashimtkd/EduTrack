@@ -1,4 +1,4 @@
-import 'package:edu_trak/screens/splash_screan.dart';
+import 'package:edu_trak/screens/splash_screen/splash_screen.dart';
 
 import 'package:flutter/material.dart';
 

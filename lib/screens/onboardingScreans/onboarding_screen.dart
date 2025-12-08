@@ -1,6 +1,6 @@
 import 'package:edu_trak/components/app_bouble.dart';
 import 'package:edu_trak/components/app_button.dart';
-import 'package:edu_trak/screens/login_page.dart';
+import 'package:edu_trak/screens/auth_screens/login_page.dart';
 import 'package:edu_trak/screens/onboardingScreans/page_1.dart';
 import 'package:edu_trak/screens/onboardingScreans/page_2.dart';
 import 'package:edu_trak/screens/onboardingScreans/page_3.dart';

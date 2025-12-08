@@ -1,19 +1,19 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/screens/app_student_profile_page.dart';
+import 'package:edu_trak/screens/home_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 
-class EditStudentProfilePage extends StatefulWidget {
-  const EditStudentProfilePage({super.key});
+class NewAdmissionPage extends StatefulWidget {
+  const NewAdmissionPage({super.key});
 
   @override
-  State<EditStudentProfilePage> createState() => _EditStudentProfilePageState();
+  State<NewAdmissionPage> createState() => _NewAdmissionPageState();
 }
 
-class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
+class _NewAdmissionPageState extends State<NewAdmissionPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   bool added = false;
@@ -21,19 +21,18 @@ class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(),
       resizeToAvoidBottomInset: false,
       body: SizedBox(
         height: size.height,
         width: size.width,
 
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+        child: Center(
+          child: Form(
+            key: _formKey,
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Text('Edit student profile').size(32).blue().semiBold(),
+                Text('New Admission').size(32).blue().semiBold(),
                 SizedBox(height: 10),
                 CircleAvatar(
                   radius: 30,
@@ -49,6 +48,7 @@ class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
                 SizedBox(height: 10),
                 AppTextField(
                   text: Text('Full name').size(14).black(),
@@ -110,17 +110,17 @@ class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
                   child: Text('Save').size(16).semiBold().wight().wight(),
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      print('valid');
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return AppStudentProfilePage();
+                            return HomePage();
                           },
                         ),
                       );
-                    } else {
-                      print('not valid');
+
+                      print('validate');
                     }
+                    print('not valid');
                   },
                 ),
               ],

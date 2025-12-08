@@ -1,19 +1,20 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/screens/app_bach_home_page.dart';
+
+import 'package:edu_trak/screens/student_screens/student_profile_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 
-class NewAdmissionPage extends StatefulWidget {
-  const NewAdmissionPage({super.key});
+class EditStudentProfilePage extends StatefulWidget {
+  const EditStudentProfilePage({super.key});
 
   @override
-  State<NewAdmissionPage> createState() => _NewAdmissionPageState();
+  State<EditStudentProfilePage> createState() => _EditStudentProfilePageState();
 }
 
-class _NewAdmissionPageState extends State<NewAdmissionPage> {
+class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   bool added = false;
@@ -21,18 +22,19 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       resizeToAvoidBottomInset: false,
       body: SizedBox(
         height: size.height,
         width: size.width,
 
-        child: Center(
-          child: Form(
-            key: _formKey,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(height: 50),
-                Text('New Admission').size(32).blue().semiBold(),
+                Text('Edit student profile').size(32).blue().semiBold(),
                 SizedBox(height: 10),
                 CircleAvatar(
                   radius: 30,
@@ -48,7 +50,6 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
                 SizedBox(height: 10),
                 AppTextField(
                   text: Text('Full name').size(14).black(),
@@ -110,17 +111,17 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                   child: Text('Save').size(16).semiBold().wight().wight(),
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
+                      print('valid');
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return AppBachHomePage();
+                            return StudentProfilePage();
                           },
                         ),
                       );
-
-                      print('validate');
+                    } else {
+                      print('not valid');
                     }
-                    print('not valid');
                   },
                 ),
               ],

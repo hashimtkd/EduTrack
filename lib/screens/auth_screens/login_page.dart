@@ -1,9 +1,11 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/screens/app_bach_home_page.dart';
-import 'package:edu_trak/screens/home_page.dart';
-import 'package:edu_trak/screens/reset_password_page.dart';
-import 'package:edu_trak/screens/teacher_register_panel.dart';
+import 'package:edu_trak/screens/auth_screens/create_account_page.dart';
+
+import 'package:edu_trak/screens/home_screen/home_page.dart';
+
+import 'package:edu_trak/screens/auth_screens/reset_password_page.dart';
+
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return AppBachHomePage();
+                            return HomePage();
                           },
                         ),
                       );
@@ -92,11 +94,11 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return TeacherRegisterPanel();
+                            return CreateAccount();
                           },
                         ),
                       ),
-                      child: Text('Register now').blue().size(12),
+                      child: Text('Create a account').blue().size(12),
                     ),
                   ],
                 ),

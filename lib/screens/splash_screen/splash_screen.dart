@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:edu_trak/screens/onboardingScreans/onboarding_screan.dart';
+import 'package:edu_trak/screens/onboardingScreans/onboarding_screen.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';

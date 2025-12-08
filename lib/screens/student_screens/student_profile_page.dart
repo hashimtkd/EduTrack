@@ -1,18 +1,18 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_card.dart';
-import 'package:edu_trak/screens/edit_student_profile_page.dart';
+import 'package:edu_trak/screens/student_screens/edit_student_profile_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 
-class AppStudentProfilePage extends StatefulWidget {
-  const AppStudentProfilePage({super.key});
+class StudentProfilePage extends StatefulWidget {
+  const StudentProfilePage({super.key});
 
   @override
-  State<AppStudentProfilePage> createState() => _AppStudentProfilePageState();
+  State<StudentProfilePage> createState() => _StudentProfilePageState();
 }
 
-class _AppStudentProfilePageState extends State<AppStudentProfilePage> {
+class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
