@@ -1,76 +1,121 @@
-import 'package:edu_trak/components/app_button.dart';
-import 'package:edu_trak/components/app_popup.dart';
-import 'package:edu_trak/components/app_text_field.dart';
+import 'package:edu_trak/models/subject_model.dart';
+import 'package:edu_trak/models/time_table_model.dart';
+import 'package:edu_trak/providers/subject_provider.dart';
+import 'package:edu_trak/providers/time_table_provider.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:edu_trak/components/app_button.dart';
 
 class BachWeeklyTimetable extends StatefulWidget {
-  const BachWeeklyTimetable({super.key});
+  final int batchId;
+
+  const BachWeeklyTimetable({super.key, required this.batchId});
 
   @override
   State<BachWeeklyTimetable> createState() => _BachWeeklyTimetableState();
 }
 
 class _BachWeeklyTimetableState extends State<BachWeeklyTimetable> {
-  final _formKey = GlobalKey<FormState>();
-
-  List<String> days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
+  final List<String> periods = ["I", "II", "III", "IV", "V", "VI", "VII"];
+  final List<String> days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
-  List<List<String>> subjects = List.generate(
-    7,
-    (_) => List.generate(7, (_) => 'maths'),
-  );
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
-  void editCell(int dayIndex, int periodIndex) {
-    TextEditingController controller = TextEditingController(
-      text: subjects[dayIndex][periodIndex],
+  @override
+  void didUpdateWidget(covariant BachWeeklyTimetable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.batchId != widget.batchId) {
+      loadData();
+    }
+  }
+
+  void loadData() {
+    Future.microtask(
+      () => context.read<TimeTableProvider>().loadByBatch(widget.batchId),
     );
+  }
 
-    appPopup(
-      context,
-      Text('Edit subject'),
-      Form(
-        key: _formKey,
-        child: AppTextField(
-          validation: 'Subject is empty',
-          controller: controller,
-          text: Text('Subject'),
+  void editCell(String day, int periodIndex, TimeTableModel? record) {
+    int? selectedSubject = record?.subjectId;
+    final subjectProvider = context.read<SubjectProvider>();
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Edit Subject").bold().size(20).blue(),
+        content: DropdownButtonFormField<int>(
+          value: selectedSubject,
+          items: subjectProvider.subjectList.map((sub) {
+            return DropdownMenuItem(
+              value: sub.id,
+              child: Text(sub.subject).bold().black(),
+            );
+          }).toList(),
+          onChanged: (v) => selectedSubject = v,
         ),
-      ),
-      [
-        AppButton(
-          onTap: () => Navigator.pop(context),
-          width: 0.20,
-          hight: 0.15,
-          child: Text('Cancel').blue().bold(),
-        ),
-        AppButton(
-          onTap: () {
-            setState(() {
-              if (_formKey.currentState!.validate()) {
-                subjects[dayIndex][periodIndex] = controller.text;
-                Navigator.pop(context);
+        actions: [
+          AppButton(
+            width: 0.25,
+            hight: 0.15,
+            onTap: () => Navigator.pop(context),
+            child: Text('Cancel').blue().bold(),
+          ),
+          AppButton(
+            width: 0.25,
+            hight: 0.15,
+            onTap: () async {
+              if (selectedSubject == null) return;
+
+              final provider = context.read<TimeTableProvider>();
+
+              if (record == null) {
+                final newRecord = TimeTableModel(
+                  id: null,
+                  batchId: widget.batchId,
+                  day: day,
+                  period: periodIndex + 1,
+                  subjectId: selectedSubject!,
+                );
+                await provider.insert(newRecord);
+              } else {
+                final updated = TimeTableModel(
+                  id: record.id,
+                  batchId: widget.batchId,
+                  day: day,
+                  period: record.period,
+                  subjectId: selectedSubject!,
+                );
+                await provider.update(updated);
               }
-            });
-          },
-          width: 0.10,
-          hight: 0.15,
-          child: Text('Ok').bold().blue(),
-        ),
-      ],
+
+              Navigator.pop(context);
+            },
+            child: Text('Save').bold().blue(),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final timeProvider = context.watch<TimeTableProvider>();
+    final subjectProvider = context.watch<SubjectProvider>();
+    final allRecords = timeProvider.timeTableList;
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
@@ -78,38 +123,56 @@ class _BachWeeklyTimetableState extends State<BachWeeklyTimetable> {
         child: DataTable(
           border: TableBorder.all(),
           columns: [
-            DataColumn(label: Text('Day')),
-            DataColumn(label: Text('I')),
-            DataColumn(label: Text('II')),
-            DataColumn(label: Text('III')),
-            DataColumn(label: Text('IV')),
-            DataColumn(label: Text('V')),
-            DataColumn(label: Text('VI')),
-            DataColumn(label: Text('VII')),
+            DataColumn(label: Text('Day').bold()),
+            ...periods.map((p) => DataColumn(label: Text(p).bold())),
           ],
-          rows: List.generate(days.length, (dayIndex) {
+          rows: days.map((day) {
+            final dayRecords = allRecords.where((e) => e.day == day).toList()
+              ..sort((a, b) => a.period.compareTo(b.period));
+
             return DataRow(
               cells: [
-                DataCell(Text(days[dayIndex])),
-                ...List.generate(7, (periodIndex) {
+                DataCell(Text(day).bold()),
+                ...List.generate(periods.length, (index) {
+                  final record = dayRecords.length > index
+                      ? dayRecords[index]
+                      : null;
+
+                  final subject = record != null
+                      ? subjectProvider.subjectList.firstWhere(
+                          (s) => s.id == record.subjectId,
+                          orElse: () => SubjectModel(id: 0, subject: "Subject"),
+                        )
+                      : SubjectModel(id: 0, subject: "Subject");
+
                   return DataCell(
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(subjects[dayIndex][periodIndex]),
-                        IconButton(
-                          onPressed: () {
-                            editCell(dayIndex, periodIndex);
-                          },
-                          icon: Icon(Icons.edit),
+                    InkWell(
+                      onTap: () => editCell(day, index, record),
+                      child: Container(
+                        color: record == null ? Colors.yellow[100] : null,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 6,
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                subject.subject,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Icon(Icons.edit, size: 18, color: Colors.blue),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 }),
               ],
             );
-          }),
+          }).toList(),
         ),
       ),
     );

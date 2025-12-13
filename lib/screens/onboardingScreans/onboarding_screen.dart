@@ -82,7 +82,7 @@ class _OnboardingScreanState extends State<OnboardingScrean> {
                     ? AppButton(
                         color: AppColors.boubleBig,
                         onTap: () {
-                          Navigator.of(context).push(
+                          Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (BuildContext context) {
                                 return LoginPage();

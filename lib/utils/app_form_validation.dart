@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 extension AppFormValidation on TextFormField {
   TextFormField validation(String text) => TextFormField(
-    controller: this.controller,
+    controller: controller,
 
-    onChanged: this.onChanged,
+    onChanged: onChanged,
     validator: (value) {
       if (value == null || value.isEmpty) {
         return text;

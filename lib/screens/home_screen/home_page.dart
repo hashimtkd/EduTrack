@@ -1,4 +1,5 @@
 import 'package:edu_trak/components/app_bouble.dart';
+import 'package:edu_trak/providers/student_provider.dart';
 
 import 'package:edu_trak/screens/bottomNavigationScreens/bach_list_of_attendance.dart';
 import 'package:edu_trak/screens/bottomNavigationScreens/result_page.dart';
@@ -7,6 +8,7 @@ import 'package:edu_trak/screens/bottomNavigationScreens/you_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -84,12 +86,25 @@ class _HomePageState extends State<HomePage> {
                   bottomRight: Radius.circular(10),
                 ),
               ),
-              child: Column(
-                children: [
-                  Text('Makbig').size(32).wight().bold(),
-                  Text('Total students : 144').size(24).wight().semiBold(),
-                  Text('25-11-2025 / Tuesday').size(14).wight().semiBold(),
-                ],
+              child: Consumer<StudentProvider>(
+                builder:
+                    (
+                      BuildContext context,
+                      StudentProvider provider,
+                      Widget? child,
+                    ) {
+                      return Column(
+                        children: [
+                          Text('Makbig').size(32).wight().bold(),
+                          Text(
+                            'Total students : ${provider.studentModelList.length}',
+                          ).size(24).wight().semiBold(),
+                          Text(
+                            '25-11-2025 / Tuesday',
+                          ).size(14).wight().semiBold(),
+                        ],
+                      );
+                    },
               ),
             ),
           ),

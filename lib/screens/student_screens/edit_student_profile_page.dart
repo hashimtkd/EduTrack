@@ -1,129 +1,305 @@
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_text_field.dart';
+import 'package:edu_trak/models/student_model.dart';
+import 'package:edu_trak/providers/student_provider.dart';
+import 'package:edu_trak/providers/bach_provider.dart';
 
-import 'package:edu_trak/screens/student_screens/student_profile_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
-
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class EditStudentProfilePage extends StatefulWidget {
-  const EditStudentProfilePage({super.key});
+class EditStudentPage extends StatefulWidget {
+  final StudentModel? provider;
+  final int? index;
+  final int? id;
+
+  const EditStudentPage({
+    super.key,
+    required this.id,
+    required this.index,
+    required this.provider,
+  });
 
   @override
-  State<EditStudentProfilePage> createState() => _EditStudentProfilePageState();
+  State<EditStudentPage> createState() => _EditStudentPageState();
 }
 
-class _EditStudentProfilePageState extends State<EditStudentProfilePage> {
+class _EditStudentPageState extends State<EditStudentPage> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController guardianController = TextEditingController();
+  final TextEditingController contactNumberController = TextEditingController();
+
+  List<TextEditingController> addressController = [TextEditingController()];
+
   bool added = false;
+  String? bloodGroup;
+  String? selectedBloodGroup;
+  String? gender;
+
+  bool isMale = false;
+  bool isFemale = false;
+
+  int? selectedBatchId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.provider != null) {
+      fullNameController.text = widget.provider!.fullName ?? "";
+      dobController.text = widget.provider!.dateOfBirth ?? "";
+      guardianController.text = widget.provider!.guardianName ?? "";
+      contactNumberController.text = widget.provider!.contactNumber ?? "";
+      emailController.text = widget.provider!.email ?? "";
+
+      selectedBatchId = widget.provider!.bachId;
+
+      gender = widget.provider!.gender;
+      selectedBloodGroup = widget.provider!.bloodGroup;
+      bloodGroup = selectedBloodGroup;
+
+      if (gender == "male") isMale = true;
+      if (gender == "female") isFemale = true;
+
+      addressController.clear();
+      for (var addr in widget.provider!.address) {
+        addressController.add(TextEditingController(text: addr));
+      }
+      if (addressController.isEmpty) {
+        addressController.add(TextEditingController());
+      }
+    }
+  }
+
+  Future<void> selectDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2010),
+      firstDate: DateTime(1990),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dobController.text =
+            "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+      });
+    }
+  }
+
+  Future<void> update({required int? id}) async {
+    bool addressIsValid = addressController.any(
+      (controller) => controller.text.isNotEmpty,
+    );
+
+    if (id != null &&
+        emailController.text.isNotEmpty &&
+        dobController.text.isNotEmpty &&
+        fullNameController.text.isNotEmpty &&
+        guardianController.text.isNotEmpty &&
+        selectedBatchId != null &&
+        contactNumberController.text.isNotEmpty &&
+        addressIsValid) {
+      final List<String> address = addressController
+          .map((c) => c.text.trim())
+          .where((text) => text.isNotEmpty)
+          .toList();
+
+      final student = StudentModel(
+        id: id,
+        fullName: fullNameController.text,
+        dateOfBirth: dobController.text,
+        gender: gender ?? "",
+        guardianName: guardianController.text,
+        bloodGroup: selectedBloodGroup ?? "",
+        address: address,
+        bachId: selectedBatchId,
+        contactNumber: contactNumberController.text,
+        email: emailController.text,
+      );
+
+      Provider.of<StudentProvider>(context, listen: false).update(student);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(),
-      resizeToAvoidBottomInset: false,
-      body: SizedBox(
-        height: size.height,
-        width: size.width,
+    final batchProvider = context.watch<BachProvider>();
 
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Center(
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 50),
-                Text('Edit student profile').size(32).blue().semiBold(),
-                SizedBox(height: 10),
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/images/OIP (2).webp'),
-                  child: Container(
-                    alignment: Alignment(1.3, 1.7),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_a_photo,
-                        color: AppColors.backgroundw,
-                      ),
+                const SizedBox(height: 50),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back),
                     ),
-                  ),
+                    Text('Edit Student').size(32).blue().semiBold(),
+                  ],
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 20),
+
                 AppTextField(
+                  controller: fullNameController,
                   text: Text('Full name').size(14).black(),
                   validation: 'Enter full name',
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+
                 AppTextField(
                   text: Text('Date Of Birth').size(14).black(),
-                  validation: 'Enter bate of birth',
+                  validation: 'Select date of birth',
+                  controller: dobController,
                   inputType: TextInputType.datetime,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_month),
+                    onPressed: selectDate,
+                  ),
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+
                 AppTextField(
+                  controller: guardianController,
                   text: Text('Guardian').size(14).black(),
                   validation: 'Enter guardian name',
                 ),
 
-                SizedBox(height: 10),
-                AppTextField(
-                  text: Text('Blood group').size(14).black(),
-                  validation: 'Select blood group',
+                const SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      hintText: "Select Blood Group",
+                    ),
+                    value: selectedBloodGroup,
+                    items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => selectedBloodGroup = value);
+                    },
+                    validator: (value) =>
+                        value == null ? 'Select blood group' : null,
+                  ),
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: isMale,
+                        onChanged: (value) {
+                          setState(() {
+                            isMale = value!;
+                            isFemale = false;
+                            gender = 'male';
+                          });
+                        },
+                      ),
+                      const Text("Male"),
+
+                      Checkbox(
+                        value: isFemale,
+                        onChanged: (value) {
+                          setState(() {
+                            isFemale = value!;
+                            isMale = false;
+                            gender = 'female';
+                          });
+                        },
+                      ),
+                      const Text("Female"),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
                 AppTextField(
+                  controller: contactNumberController,
                   text: Text('Contact number').size(14).black(),
                   validation: 'Enter contact number',
                   inputType: TextInputType.phone,
                 ),
-                SizedBox(height: 10),
-                AppTextField(
-                  text: Text('Address').size(14).black(),
-                  validation: 'Enter address',
+
+                const SizedBox(height: 10),
+
+                Column(
+                  children: List.generate(
+                    addressController.length,
+                    (index) => AppTextField(
+                      controller: addressController[index],
+                      text: Text('Address').size(14).black(),
+                      validation: 'Enter address',
+                    ),
+                  ),
                 ),
 
-                SizedBox(height: 10),
-                AppTextField(
-                  text: Text('Bach').size(14).black(),
-                  validation: 'Enter bach',
+                const SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(hintText: "Select Batch"),
+                    value: selectedBatchId,
+                    items: batchProvider.bachtList
+                        .map(
+                          (b) => DropdownMenuItem(
+                            value: b.id,
+                            child: Text(b.batchName),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) =>
+                        setState(() => selectedBatchId = value),
+                    validator: (value) => value == null ? 'Select batch' : null,
+                  ),
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+
                 AppTextField(
                   text: Text('Email').size(14).black(),
                   validation: 'Enter email',
                   inputType: TextInputType.emailAddress,
                   controller: emailController,
-                  autoFill: (value) {
-                    if (added == false && emailController.text.contains('@')) {
-                      emailController.text = '${emailController.text}gmail.com';
-                      added = true;
-                    }
-                  },
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
                 AppButton(
                   color: AppColors.backGround,
                   hight: 0.150,
                   width: 0.72,
-                  child: Text('Save').size(16).semiBold().wight().wight(),
-                  onTap: () {
+                  child: Text('Save').size(16).semiBold().wight(),
+                  onTap: () async {
                     if (_formKey.currentState!.validate()) {
-                      print('valid');
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return StudentProfilePage();
-                          },
-                        ),
-                      );
-                    } else {
-                      print('not valid');
+                      await update(id: widget.provider!.id);
+                      Navigator.pop(context);
                     }
                   },
                 ),
+
+                const SizedBox(height: 20),
               ],
             ),
           ),

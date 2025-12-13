@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:edu_trak/db/db_functions/shared_preferences/login_prefs.dart';
+import 'package:edu_trak/screens/home_screen/home_page.dart';
 import 'package:edu_trak/screens/onboardingScreans/onboarding_screen.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
@@ -16,16 +18,21 @@ class _SplashScreanState extends State<SplashScrean> {
   @override
   void initState() {
     super.initState();
-    Timer(
-      Duration(seconds: 3),
-      () => Navigator.of(context).push(
+    navigate();
+  }
+
+  Future<void> navigate() async {
+    Future.delayed(const Duration(seconds: 3), () async {
+      final status = await LoginPrefs.getLoginStatus();
+
+      Navigator.pushReplacement(
+        context,
         MaterialPageRoute(
-          builder: (BuildContext context) {
-            return OnboardingScrean();
-          },
+          builder: (_) =>
+              status == true ? const HomePage() : const OnboardingScrean(),
         ),
-      ),
-    );
+      );
+    });
   }
 
   @override

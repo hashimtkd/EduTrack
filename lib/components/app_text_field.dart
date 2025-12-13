@@ -8,13 +8,17 @@ class AppTextField extends StatefulWidget {
   final TextInputType? inputType;
   final ValueChanged<String>? autoFill;
   final TextEditingController? controller;
-  const AppTextField({
+  bool passwordfeild;
+  IconButton? suffixIcon;
+  AppTextField({
     super.key,
     required this.text,
     required this.validation,
     this.inputType,
     this.autoFill,
     this.controller,
+    this.passwordfeild = false,
+    this.suffixIcon,
   });
 
   @override
@@ -22,8 +26,11 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
+  bool isPasswordVisible = false;
+
   @override
   Widget build(BuildContext context) {
+    final bool hideText = isPasswordVisible;
     final size = MediaQuery.of(context).size;
     return Container(
       padding: EdgeInsets.only(left: 10, bottom: 5),
@@ -36,10 +43,25 @@ class _AppTextFieldState extends State<AppTextField> {
         border: Border.all(color: AppColors.backGround),
       ),
       child: TextFormField(
+        obscureText: hideText,
         controller: widget.controller,
         keyboardType: widget.inputType,
         onChanged: widget.autoFill,
         decoration: InputDecoration(
+          suffixIcon:
+              widget.suffixIcon ??
+              (widget.passwordfeild == false
+                  ? null
+                  : IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                      icon: isPasswordVisible
+                          ? Icon(Icons.visibility)
+                          : Icon(Icons.visibility_off),
+                    )),
           border: InputBorder.none,
           hintText: widget.text.data,
           hintStyle: TextStyle(color: AppColors.backGround),
