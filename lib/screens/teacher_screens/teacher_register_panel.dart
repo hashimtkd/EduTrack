@@ -60,12 +60,7 @@ class _TeacherRegisterPanelState extends State<TeacherRegisterPanel> {
                   ),
 
                   SizedBox(height: 10),
-                  AppTextField(
-                    text: Text('Subject').size(14).black(),
-                    validation: 'Enter subject',
-                  ),
 
-                  SizedBox(height: 10),
                   AppTextField(
                     text: Text('Qualification').size(14).black(),
                     validation: 'Enter qualification',
