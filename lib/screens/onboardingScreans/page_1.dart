@@ -14,7 +14,9 @@ class Page1 extends StatelessWidget {
             left: 20,
             child: Column(
               children: [
-                Text('Manage Students \nEffortlessly').bold().wight().size(30),
+                const Text(
+                  'Manage Students \nEffortlessly',
+                ).bold().wight().size(30),
               ],
             ),
           ),
@@ -27,7 +29,7 @@ class Page1 extends StatelessWidget {
           Positioned(
             bottom: 180,
             left: 20,
-            child: Text(
+            child: const Text(
               'Keep all your student records \norganized in one place — attendance, profiles,\nand admissions.',
             ).size(18).blue().semiBold().onBoardingBText(),
           ),

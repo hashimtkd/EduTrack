@@ -1,14 +1,20 @@
+import 'dart:io';
+
 import 'package:edu_trak/components/app_alert_popup.dart';
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_card.dart';
 import 'package:edu_trak/components/app_popup.dart';
 import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/models/attendance_status_model.dart';
+import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
+import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
+
 import 'package:edu_trak/providers/attendance_provider.dart';
+import 'package:edu_trak/providers/profile_image_provider.dart';
 import 'package:edu_trak/providers/student_provider.dart';
 import 'package:edu_trak/screens/student_screens/new_admission_page.dart';
 import 'package:edu_trak/screens/student_screens/student_profile_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
+import 'package:edu_trak/utils/app_date.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,14 +52,16 @@ class _AttendancePageState extends State<AttendancePage> {
                       .where((s) => s.bachId == widget.batchId)
                       .toList();
 
-                  return Text(
-                    'Total students : ${batchStudents.length}',
-                  ).size(24).blue().semiBold();
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Total students :').size(16).blue(),
+                      Text('  ${batchStudents.length}').size(16).blue().bold(),
+                    ],
+                  );
                 },
               ),
-              Text(
-                '${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}',
-              ).size(14).blue().semiBold(),
+              Text(AppDate.todayDate()).size(14).blue().semiBold(),
             ],
           ),
 
@@ -86,6 +94,11 @@ class _AttendancePageState extends State<AttendancePage> {
                         );
 
                     final status = currentStatus.status;
+                    final image = context.watch<ProfileImageProvider>();
+                    final List<ProfileImageModel> studentImage = image
+                        .profileImageList
+                        .where((img) => img.id == student.profileImageId)
+                        .toList();
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -95,13 +108,15 @@ class _AttendancePageState extends State<AttendancePage> {
                         width: 300,
                         onLongPress: () => appAlertPopup(
                           context: context,
-                          content: Text('Do you want to delete this profile?'),
+                          content: const Text(
+                            'Do you want to delete this profile?',
+                          ),
                           action: [
                             AppButton(
                               onTap: () => Navigator.pop(context),
                               width: 0.20,
                               hight: 0.15,
-                              child: Text('Cancel').blue().bold(),
+                              child: const Text('Cancel').blue().bold(),
                             ),
                             AppButton(
                               onTap: () {
@@ -131,6 +146,18 @@ class _AttendancePageState extends State<AttendancePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const SizedBox(width: 2),
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: studentImage.isNotEmpty
+                                  ? FileImage(
+                                      File(studentImage.first.profileImage),
+                                    )
+                                  : null,
+                              child: studentImage.isEmpty
+                                  ? Icon(Icons.person)
+                                  : null,
+                            ),
                             const SizedBox(width: 2),
                             Text(student.fullName).wight(),
                             const SizedBox(width: 20),

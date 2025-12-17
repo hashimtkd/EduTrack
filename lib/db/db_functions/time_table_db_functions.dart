@@ -1,5 +1,5 @@
 import 'package:edu_trak/db/hive_boxes/hive_boxes.dart';
-import 'package:edu_trak/models/time_table_model.dart';
+import 'package:edu_trak/models/time_table_model/time_table_model.dart';
 
 class TimeTableDbFunctions {
   static final box = HiveBoxes.timeTableBox!;

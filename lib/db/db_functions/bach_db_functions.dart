@@ -1,5 +1,5 @@
 import 'package:edu_trak/db/hive_boxes/hive_boxes.dart';
-import 'package:edu_trak/models/bach_model.dart';
+import 'package:edu_trak/models/bach_model/bach_model.dart';
 
 class BachDbFunctions {
   static final box = HiveBoxes.batchBox!;

@@ -27,6 +27,8 @@ class StudentModel {
   int? teacherId;
   @HiveField(11)
   int? subjectId;
+  @HiveField(12)
+  int? profileImageId;
 
   StudentModel({
     this.id,
@@ -41,5 +43,6 @@ class StudentModel {
     required this.email,
     this.teacherId,
     this.subjectId,
+    this.profileImageId,
   });
 }

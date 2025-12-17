@@ -1,5 +1,5 @@
 import 'package:edu_trak/db/hive_boxes/hive_boxes.dart';
-import 'package:edu_trak/models/subject_model.dart';
+import 'package:edu_trak/models/subject_model/subject_model.dart';
 
 class SubjectDbFunctions {
   static final box = HiveBoxes.subjectBox!;

@@ -30,12 +30,12 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hideText = isPasswordVisible;
     final size = MediaQuery.of(context).size;
+    final bool hideText = isPasswordVisible;
     return Container(
       padding: EdgeInsets.only(left: 10, bottom: 5),
       height: size.width * 0.150,
-      width: size.width * 0.72,
+      width: size.width * 0.920,
 
       decoration: BoxDecoration(
         color: AppColors.textField,
@@ -58,9 +58,9 @@ class _AppTextFieldState extends State<AppTextField> {
                           isPasswordVisible = !isPasswordVisible;
                         });
                       },
-                      icon: isPasswordVisible
-                          ? Icon(Icons.visibility)
-                          : Icon(Icons.visibility_off),
+                      icon: isPasswordVisible == false
+                          ? Icon(Icons.visibility_off)
+                          : Icon(Icons.visibility),
                     )),
           border: InputBorder.none,
           hintText: widget.text.data,

@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_card.dart';
-import 'package:edu_trak/models/attendance_status_model.dart';
+import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
+import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
 import 'package:edu_trak/providers/attendance_provider.dart';
-
+import 'package:edu_trak/providers/profile_image_provider.dart';
 import 'package:edu_trak/providers/student_provider.dart';
 import 'package:edu_trak/screens/student_screens/edit_student_profile_page.dart';
-
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,8 @@ import 'package:provider/provider.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final int index;
-  const StudentProfilePage({super.key, required this.index});
+  int? imgId;
+  StudentProfilePage({super.key, required this.index, this.imgId});
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
@@ -30,9 +33,21 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         child: Consumer<StudentProvider>(
           builder: (context, provider, child) {
             final student = provider.studentModelList[widget.index];
+            final image = context.watch<ProfileImageProvider>();
+            final List<ProfileImageModel> studentImage = image.profileImageList
+                .where((img) => img.id == student.profileImageId)
+                .toList();
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: studentImage.isNotEmpty
+                      ? FileImage(File(studentImage.first.profileImage))
+                      : null,
+                  child: studentImage.isEmpty ? Icon(Icons.person) : null,
+                ),
                 Text(student.fullName).wight().size(30).bold(),
                 Column(children: [Text(student.address[0]).wight().size(25)]),
                 Row(
@@ -59,6 +74,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               id: student.id,
                               index: widget.index,
                               provider: student,
+                              profileImage: studentImage.first.profileImage,
+                              profileImageId: studentImage.first.id,
                             );
                           },
                         ),

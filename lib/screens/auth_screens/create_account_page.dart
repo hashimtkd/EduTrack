@@ -41,7 +41,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 Text('Create an account').size(32).blue().semiBold(),
                 const SizedBox(height: 100),
                 AppTextField(
-                  text: Text('Email or phone number').size(14).black(),
+                  text: const Text('Email or phone number').size(14).black(),
                   validation: 'Enter email or phone number',
                   controller: emailController,
                   autoFill: (value) {
@@ -54,14 +54,14 @@ class _CreateAccountState extends State<CreateAccount> {
                 const SizedBox(height: 10),
                 AppTextField(
                   passwordfeild: true,
-                  text: Text('New password').size(14).black(),
+                  text: const Text('New password').size(14).black(),
                   validation: 'Enter new password',
                   controller: passController,
                 ),
                 const SizedBox(height: 10),
                 AppTextField(
                   passwordfeild: true,
-                  text: Text('Confirm Password').size(14).black(),
+                  text: const Text('Confirm Password').size(14).black(),
                   validation: 'Confirm your password',
                   controller: confirmController,
                 ),
@@ -70,7 +70,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   color: AppColors.backGround,
                   hight: 0.150,
                   width: 0.72,
-                  child: Text('Save').size(16).semiBold().wight().wight(),
+                  child: const Text('Save').size(16).semiBold().wight().wight(),
                   onTap: () async {
                     if (!_formKey.currentState!.validate()) return;
 

@@ -14,7 +14,7 @@ class Page2 extends StatelessWidget {
             left: 20,
             child: Column(
               children: [
-                Text('Quick & Smart\nAttendance').bold().wight().size(30),
+                const Text('Quick & Smart\nAttendance').bold().wight().size(30),
               ],
             ),
           ),
@@ -27,7 +27,7 @@ class Page2 extends StatelessWidget {
           Positioned(
             bottom: 180,
             left: 20,
-            child: Text(
+            child: const Text(
               'Mark daily attendance in seconds \nwith a clean and simple interface.',
             ).size(18).blue().onBoardingBText().bold(),
           ),

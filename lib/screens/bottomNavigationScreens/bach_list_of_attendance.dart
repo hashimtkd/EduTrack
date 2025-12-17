@@ -19,34 +19,37 @@ class _BachListOfAttendanceState extends State<BachListOfAttendance> {
   Widget build(BuildContext context) {
     final bachProvider = context.watch<BachProvider>();
 
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 5,
+          mainAxisSpacing: 5,
+        ),
 
-      itemCount: bachProvider.bachtList.length,
+        itemCount: bachProvider.bachtList.length,
 
-      itemBuilder: (context, index) {
-        final batch = bachProvider.bachtList[index];
+        itemBuilder: (context, index) {
+          final batch = bachProvider.bachtList[index];
 
-        return AppCard(
-          color: AppColors.backgroundw,
-          child: Text(batch.batchName).semiBold().blue().size(20),
+          return AppCard(
+            color: AppColors.backgroundw,
+            child: Text(batch.batchName).semiBold().blue().size(20),
 
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => AttendancePage(
-                  batchId: batch.id!,
-                  batchName: batch.batchName,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => AttendancePage(
+                    batchId: batch.id!,
+                    batchName: batch.batchName,
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

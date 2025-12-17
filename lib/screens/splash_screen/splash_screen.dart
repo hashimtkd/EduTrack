@@ -43,7 +43,7 @@ class _SplashScreanState extends State<SplashScrean> {
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: Text('EduTrack').size(40).wight().splashScreanText(),
+          child: const Text('EduTrack').size(40).wight().splashScreanText(),
         ),
       ),
     );

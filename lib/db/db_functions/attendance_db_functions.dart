@@ -1,5 +1,5 @@
 import 'package:edu_trak/db/hive_boxes/hive_boxes.dart';
-import 'package:edu_trak/models/attendance_status_model.dart';
+import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
 
 class AttendanceDbFunctions {
   static Future<void> insert(AttendanceStatusModel attendanceModel) async {
@@ -9,11 +9,11 @@ class AttendanceDbFunctions {
   }
 
   static Future<List<AttendanceStatusModel>> getAll() async {
-    final List<AttendanceStatusModel> _list = HiveBoxes
+    final List<AttendanceStatusModel> list = HiveBoxes
         .attendanceStatusBox!
         .values
         .toList();
-    print(_list);
-    return _list;
+    print(list);
+    return list;
   }
 }

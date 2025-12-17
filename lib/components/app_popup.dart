@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 void appPopup(
   BuildContext contex,
   Widget title,
-  Widget content,
-  List<Widget> actionList,
-) {
+  Widget content, [
+  List<Widget>? actionList,
+]) {
   showDialog(
     context: contex,
     builder: (BuildContext context) {

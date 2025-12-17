@@ -1,11 +1,16 @@
 import 'package:edu_trak/components/app_bouble.dart';
+import 'package:edu_trak/components/app_card.dart';
+import 'package:edu_trak/db/db_functions/shared_preferences/login_prefs.dart';
 import 'package:edu_trak/providers/student_provider.dart';
+import 'package:edu_trak/screens/auth_screens/login_page.dart';
+import 'package:edu_trak/screens/auth_screens/reset_password_page.dart';
 
 import 'package:edu_trak/screens/bottomNavigationScreens/bach_list_of_attendance.dart';
 import 'package:edu_trak/screens/bottomNavigationScreens/result_page.dart';
 import 'package:edu_trak/screens/bottomNavigationScreens/timeTable_page.dart';
 import 'package:edu_trak/screens/bottomNavigationScreens/you_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
+import 'package:edu_trak/utils/app_date.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-
+  bool youPage = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Widget> pages(BuildContext context) {
@@ -27,6 +32,7 @@ class _HomePageState extends State<HomePage> {
       const BachListOfAttendance(),
       const TimetablePage(),
       const ResultPage(),
+      const YouPage(),
     ];
   }
 
@@ -39,7 +45,79 @@ class _HomePageState extends State<HomePage> {
 
       drawer: Drawer(
         backgroundColor: AppColors.backGround,
-        child: const YouPage(),
+        child: Column(
+          children: [
+            const SizedBox(height: 100),
+
+            AppCard(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return YouPage();
+                    },
+                  ),
+                );
+              },
+              child: Column(
+                children: [
+                  const CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.person,
+                      size: 40,
+                      color: AppColors.backGround,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  const Text(
+                    "Jone sir",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            ListTile(
+              leading: const Icon(Icons.lock, color: Colors.white),
+              title: const Text(
+                "Change Password",
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ResetPasswordPage()),
+                );
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.white),
+              title: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () async {
+                await LoginPrefs.logout();
+                await Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  (route) => false,
+                );
+              },
+            ),
+          ],
+        ),
       ),
 
       appBar: AppBar(backgroundColor: AppColors.backGround),
@@ -74,43 +152,53 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          Positioned(
-            top: 0,
-            child: Container(
-              width: size.width,
-              height: size.height * 0.210,
-              decoration: BoxDecoration(
-                color: AppColors.backGround,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                ),
-              ),
-              child: Consumer<StudentProvider>(
-                builder:
-                    (
-                      BuildContext context,
-                      StudentProvider provider,
-                      Widget? child,
-                    ) {
-                      return Column(
-                        children: [
-                          Text('Makbig').size(32).wight().bold(),
-                          Text(
-                            'Total students : ${provider.studentModelList.length}',
-                          ).size(24).wight().semiBold(),
-                          Text(
-                            '25-11-2025 / Tuesday',
-                          ).size(14).wight().semiBold(),
-                        ],
-                      );
-                    },
-              ),
-            ),
-          ),
+          youPage == false
+              ? Positioned(
+                  top: 0,
+                  child: Container(
+                    width: size.width,
+                    height: size.height * 0.210,
+                    decoration: BoxDecoration(
+                      color: AppColors.backGround,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                    ),
+                    child: Consumer<StudentProvider>(
+                      builder:
+                          (
+                            BuildContext context,
+                            StudentProvider provider,
+                            Widget? child,
+                          ) {
+                            return Column(
+                              children: [
+                                const Text(
+                                  'Zubair Academy',
+                                ).size(32).wight().bold(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Total students :').size(16).wight(),
+                                    Text(
+                                      '  ${provider.studentModelList.length}',
+                                    ).size(16).wight().bold(),
+                                  ],
+                                ),
+                                Text(
+                                  AppDate.todayDate(),
+                                ).size(16).wight().semiBold(),
+                              ],
+                            );
+                          },
+                    ),
+                  ),
+                )
+              : Container(),
 
           Positioned.fill(
-            top: 200,
+            top: youPage == false ? 200 : 0,
             child: IndexedStack(index: selectedIndex, children: pages(context)),
           ),
         ],
@@ -122,12 +210,13 @@ class _HomePageState extends State<HomePage> {
         currentIndex: selectedIndex,
 
         onTap: (value) {
+          setState(() {
+            selectedIndex = value;
+          });
           if (value == 3) {
-            _scaffoldKey.currentState!.openDrawer();
+            youPage = true;
           } else {
-            setState(() {
-              selectedIndex = value;
-            });
+            youPage = false;
           }
         },
 

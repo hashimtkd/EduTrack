@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 100),
 
                 AppTextField(
-                  text: Text('Username').size(14).black(),
+                  text: const Text('Username').size(14).black(),
                   controller: idController,
                   validation: 'Enter username',
                 ),
@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 AppTextField(
                   passwordfeild: true,
-                  text: Text('Password').size(14).black(),
+                  text: const Text('Password').size(14).black(),
                   controller: passController,
                   validation: 'Enter password',
                 ),

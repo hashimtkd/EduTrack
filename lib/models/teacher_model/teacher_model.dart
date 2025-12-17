@@ -13,6 +13,8 @@ class TeacherModel {
   final String email;
   @HiveField(4)
   int? subjectId;
+  @HiveField(5)
+  int? profileImageId;
 
   TeacherModel({
     required this.id,
@@ -20,5 +22,6 @@ class TeacherModel {
     required this.contactNumber,
     required this.email,
     this.subjectId,
+    this.profileImageId,
   });
 }

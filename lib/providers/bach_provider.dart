@@ -1,5 +1,6 @@
 import 'package:edu_trak/db/db_functions/bach_db_functions.dart';
-import 'package:edu_trak/models/bach_model.dart';
+import 'package:edu_trak/models/bach_model/bach_model.dart';
+
 import 'package:flutter/material.dart';
 
 class BachProvider extends ChangeNotifier {

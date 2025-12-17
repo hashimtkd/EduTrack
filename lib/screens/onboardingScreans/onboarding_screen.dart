@@ -85,14 +85,14 @@ class _OnboardingScreanState extends State<OnboardingScrean> {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (BuildContext context) {
-                                return LoginPage();
+                                return const LoginPage();
                               },
                             ),
                           );
                         },
                         width: 0.15,
                         hight: 0.14,
-                        child: Text('Get start').wight().bold().size(20),
+                        child: const Text('Get start').wight().bold().size(20),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,7 +104,7 @@ class _OnboardingScreanState extends State<OnboardingScrean> {
                             onTap: () {
                               controller.jumpToPage(3);
                             },
-                            child: Text('Skip').blue().bold().size(15),
+                            child: const Text('Skip').blue().bold().size(15),
                           ),
                           SmoothPageIndicator(
                             effect: WormEffect(),
@@ -121,7 +121,7 @@ class _OnboardingScreanState extends State<OnboardingScrean> {
                                 curve: Curves.easeInOut,
                               );
                             },
-                            child: Text('Next').blue().bold(),
+                            child: const Text('Next').blue().bold(),
                           ),
                         ],
                       ),

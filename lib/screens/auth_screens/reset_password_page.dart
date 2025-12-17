@@ -81,7 +81,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 const SizedBox(height: 100),
 
                 AppTextField(
-                  text: Text('Email or phone number').size(14).black(),
+                  text: const Text('Email or phone number').size(14).black(),
                   validation: 'Enter email or phone number',
                   controller: idController,
                   autoFill: (value) {
@@ -94,14 +94,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 const SizedBox(height: 10),
                 AppTextField(
                   passwordfeild: true,
-                  text: Text('New password').size(14).black(),
+                  text: const Text('New password').size(14).black(),
                   validation: 'Enter new password',
                   controller: newPassController,
                 ),
                 const SizedBox(height: 10),
                 AppTextField(
                   passwordfeild: true,
-                  text: Text('Confirm new password').size(14).black(),
+                  text: const Text('Confirm new password').size(14).black(),
                   validation: 'Please confirm new password',
                   controller: confirmPassController,
                 ),
@@ -111,7 +111,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   hight: 0.150,
                   width: 0.72,
                   onTap: resetPassword,
-                  child: Text('Save').size(16).semiBold().wight().wight(),
+                  child: const Text('Save').size(16).semiBold().wight().wight(),
                 ),
               ],
             ),

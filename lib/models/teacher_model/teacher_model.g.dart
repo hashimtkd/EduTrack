@@ -22,13 +22,14 @@ class TeacherModelAdapter extends TypeAdapter<TeacherModel> {
       contactNumber: fields[2] as int,
       email: fields[3] as String,
       subjectId: fields[4] as int?,
+      profileImageId: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TeacherModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class TeacherModelAdapter extends TypeAdapter<TeacherModel> {
       ..writeByte(3)
       ..write(obj.email)
       ..writeByte(4)
-      ..write(obj.subjectId);
+      ..write(obj.subjectId)
+      ..writeByte(5)
+      ..write(obj.profileImageId);
   }
 
   @override

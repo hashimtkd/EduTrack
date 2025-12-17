@@ -13,7 +13,9 @@ class Page3 extends StatelessWidget {
             top: 100,
             left: 20,
             child: Column(
-              children: [Text('Built for \nTeachers').bold().wight().size(30)],
+              children: [
+                const Text('Built for \nTeachers').bold().wight().size(30),
+              ],
             ),
           ),
           Positioned(
@@ -25,7 +27,7 @@ class Page3 extends StatelessWidget {
           Positioned(
             bottom: 180,
             left: 20,
-            child: Text(
+            child: const Text(
               'Edit profiles, manage timetables, \nand handle your class with \nease—everything designed \nfor teachers.',
             ).size(18).blue().onBoardingBText().bold(),
           ),

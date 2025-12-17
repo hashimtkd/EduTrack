@@ -1,6 +1,6 @@
 import 'package:edu_trak/db/db_functions/user_db_functions.dart';
+import 'package:edu_trak/models/user_model/user_model.dart';
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
   Future<String> signUp(String id, String password) async {

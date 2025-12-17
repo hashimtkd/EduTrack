@@ -1,5 +1,5 @@
 import 'package:edu_trak/db/hive_boxes/hive_boxes.dart';
-import 'package:edu_trak/models/user_model.dart';
+import 'package:edu_trak/models/user_model/user_model.dart';
 
 class UserDbFunctions {
   static final box = HiveBoxes.userBox;

@@ -1,6 +1,6 @@
 import 'package:edu_trak/components/app_card.dart';
-import 'package:edu_trak/models/subject_model.dart';
-import 'package:edu_trak/models/time_table_model.dart';
+import 'package:edu_trak/models/time_table_model/time_table_model.dart';
+
 import 'package:edu_trak/providers/subject_provider.dart';
 import 'package:edu_trak/providers/time_table_provider.dart';
 import 'package:edu_trak/utils/app_text_style.dart';

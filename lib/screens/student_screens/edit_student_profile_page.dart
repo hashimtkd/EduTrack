@@ -1,11 +1,19 @@
-import 'package:edu_trak/components/app_button.dart';
-import 'package:edu_trak/components/app_text_field.dart';
-import 'package:edu_trak/models/student_model.dart';
-import 'package:edu_trak/providers/student_provider.dart';
-import 'package:edu_trak/providers/bach_provider.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:io';
+
+import 'package:edu_trak/components/app_button.dart';
+import 'package:edu_trak/components/app_card.dart';
+import 'package:edu_trak/components/app_popup.dart';
+import 'package:edu_trak/components/app_text_field.dart';
+import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
+import 'package:edu_trak/models/student_model/student_model.dart';
+import 'package:edu_trak/providers/bach_provider.dart';
+import 'package:edu_trak/providers/profile_image_provider.dart';
+import 'package:edu_trak/providers/student_provider.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
+import 'package:edu_trak/utils/image_picker_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,12 +21,15 @@ class EditStudentPage extends StatefulWidget {
   final StudentModel? provider;
   final int? index;
   final int? id;
-
+  final String? profileImage;
+  final int? profileImageId;
   const EditStudentPage({
     super.key,
-    required this.id,
-    required this.index,
     required this.provider,
+    required this.index,
+    required this.id,
+    this.profileImage,
+    this.profileImageId,
   });
 
   @override
@@ -29,7 +40,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController dobController = TextEditingController();
+
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController guardianController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
@@ -40,19 +51,19 @@ class _EditStudentPageState extends State<EditStudentPage> {
   String? bloodGroup;
   String? selectedBloodGroup;
   String? gender;
-
+  String dob = 'Date of birth';
   bool isMale = false;
   bool isFemale = false;
-
+  String? temporalyImage;
   int? selectedBatchId;
-
+  int? imgId;
   @override
   void initState() {
     super.initState();
 
     if (widget.provider != null) {
       fullNameController.text = widget.provider!.fullName ?? "";
-      dobController.text = widget.provider!.dateOfBirth ?? "";
+      dob = widget.provider!.dateOfBirth ?? "";
       guardianController.text = widget.provider!.guardianName ?? "";
       contactNumberController.text = widget.provider!.contactNumber ?? "";
       emailController.text = widget.provider!.email ?? "";
@@ -86,8 +97,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
     if (pickedDate != null) {
       setState(() {
-        dobController.text =
-            "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+        dob = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
       });
     }
   }
@@ -99,7 +109,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
     if (id != null &&
         emailController.text.isNotEmpty &&
-        dobController.text.isNotEmpty &&
+        dob.isNotEmpty &&
         fullNameController.text.isNotEmpty &&
         guardianController.text.isNotEmpty &&
         selectedBatchId != null &&
@@ -113,7 +123,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
       final student = StudentModel(
         id: id,
         fullName: fullNameController.text,
-        dateOfBirth: dobController.text,
+        dateOfBirth: dob,
         gender: gender ?? "",
         guardianName: guardianController.text,
         bloodGroup: selectedBloodGroup ?? "",
@@ -121,9 +131,13 @@ class _EditStudentPageState extends State<EditStudentPage> {
         bachId: selectedBatchId,
         contactNumber: contactNumberController.text,
         email: emailController.text,
+        profileImageId: imgId ?? widget.profileImageId,
       );
 
-      Provider.of<StudentProvider>(context, listen: false).update(student);
+      await Provider.of<StudentProvider>(
+        context,
+        listen: false,
+      ).update(student);
     }
   }
 
@@ -139,19 +153,104 @@ class _EditStudentPageState extends State<EditStudentPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 50),
-                Row(
+                Stack(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage:
+                          temporalyImage != null && temporalyImage!.isNotEmpty
+                          ? FileImage(File(temporalyImage!))
+                          : widget.profileImage != null
+                          ? FileImage(File(widget.profileImage as String))
+                          : null,
+                      child:
+                          (temporalyImage == null || temporalyImage!.isEmpty) &&
+                              widget.profileImage == null
+                          ? const Icon(Icons.person, size: 40)
+                          : null,
                     ),
-                    Text('Edit Student').size(32).blue().semiBold(),
+
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: IconButton(
+                        onPressed: () async {
+                          appPopup(
+                            context,
+                            Text('Upload from').blue(),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppButton(
+                                  border: Border.all(
+                                    color: AppColors.backGround,
+                                  ),
+                                  onTap: () async {
+                                    final file =
+                                        await ImagePickerHelper.pickFromCamera();
+                                    final image = ProfileImageModel(
+                                      profileImage: file,
+                                    );
+                                    await context
+                                        .read<ProfileImageProvider>()
+                                        .delete(
+                                          widget.profileImage!,
+                                          widget.profileImageId,
+                                        );
+                                    imgId = await context
+                                        .read<ProfileImageProvider>()
+                                        .insert(image);
+
+                                    Navigator.of(context).pop();
+                                  },
+                                  width: 0.50,
+                                  hight: 0.100,
+                                  child: Text('Camera').blue().bold(),
+                                ),
+                                const SizedBox(height: 5),
+                                AppButton(
+                                  border: Border.all(
+                                    color: AppColors.backGround,
+                                  ),
+                                  onTap: () async {
+                                    final file =
+                                        await ImagePickerHelper.pickFromGallery();
+                                    setState(() {
+                                      temporalyImage = file;
+                                    });
+                                    final image = ProfileImageModel(
+                                      profileImage: file,
+                                    );
+                                    await context
+                                        .read<ProfileImageProvider>()
+                                        .delete(
+                                          widget.profileImage!,
+                                          widget.profileImageId,
+                                        );
+                                    imgId = await context
+                                        .read<ProfileImageProvider>()
+                                        .insert(image);
+
+                                    Navigator.of(context).pop();
+                                  },
+                                  width: 0.50,
+                                  hight: 0.100,
+                                  child: Text('Gallery').blue().bold(),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.camera_alt,
+                          size: 30,
+                          color: AppColors.backgroundw,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-
-                const SizedBox(height: 20),
-
+                SizedBox(height: 10),
                 AppTextField(
                   controller: fullNameController,
                   text: Text('Full name').size(14).black(),
@@ -160,15 +259,66 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
                 const SizedBox(height: 10),
 
-                AppTextField(
-                  text: Text('Date Of Birth').size(14).black(),
-                  validation: 'Select date of birth',
-                  controller: dobController,
-                  inputType: TextInputType.datetime,
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_month),
-                    onPressed: selectDate,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: AppCard(
+                        onTap: () => selectDate(),
+                        hight: 50,
+                        width: 150,
+                        border: Border.all(color: AppColors.backGround),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(dob),
+                            SizedBox(width: 5),
+                            const Icon(Icons.calendar_month),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 30),
+                    Flexible(
+                      child: AppCard(
+                        width: 150,
+                        border: Border.all(color: AppColors.backGround),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: DropdownButtonFormField<String>(
+                            decoration: const InputDecoration(
+                              hintText: "Blood Group",
+                              border: InputBorder.none,
+                            ),
+                            value: selectedBloodGroup,
+                            items:
+                                [
+                                      'A+',
+                                      'A-',
+                                      'B+',
+                                      'B-',
+                                      'O+',
+                                      'O-',
+                                      'AB+',
+                                      'AB-',
+                                    ]
+                                    .map(
+                                      (e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (value) {
+                              setState(() => selectedBloodGroup = value);
+                            },
+                            validator: (value) =>
+                                value == null ? 'Blood group' : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
@@ -181,55 +331,69 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
                 const SizedBox(height: 10),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      hintText: "Select Blood Group",
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppCard(
+                      width: 180,
+                      border: Border.all(color: AppColors.backGround),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isMale,
+                            onChanged: (value) {
+                              setState(() {
+                                isMale = value!;
+                                isFemale = false;
+                                gender = 'male';
+                              });
+                            },
+                          ),
+                          const Text("Male"),
+
+                          Checkbox(
+                            value: isFemale,
+                            onChanged: (value) {
+                              setState(() {
+                                isFemale = value!;
+                                isMale = false;
+                                gender = 'female';
+                              });
+                            },
+                          ),
+                          const Text("Female"),
+                        ],
+                      ),
                     ),
-                    value: selectedBloodGroup,
-                    items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() => selectedBloodGroup = value);
-                    },
-                    validator: (value) =>
-                        value == null ? 'Select blood group' : null,
-                  ),
-                ),
+                    SizedBox(width: 2),
+                    AppCard(
+                      width: 150,
+                      border: Border.all(color: AppColors.backGround),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: DropdownButtonFormField<int>(
+                          isDense: true,
+                          decoration: const InputDecoration(
+                            hintText: "Batch",
 
-                const SizedBox(height: 10),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isMale,
-                        onChanged: (value) {
-                          setState(() {
-                            isMale = value!;
-                            isFemale = false;
-                            gender = 'male';
-                          });
-                        },
+                            border: InputBorder.none,
+                          ),
+                          value: selectedBatchId,
+                          items: batchProvider.bachtList
+                              .map(
+                                (b) => DropdownMenuItem(
+                                  value: b.id,
+                                  child: Text(b.batchName),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => selectedBatchId = value),
+                          validator: (value) => value == null ? 'Batch' : null,
+                        ),
                       ),
-                      const Text("Male"),
-
-                      Checkbox(
-                        value: isFemale,
-                        onChanged: (value) {
-                          setState(() {
-                            isFemale = value!;
-                            isMale = false;
-                            gender = 'female';
-                          });
-                        },
-                      ),
-                      const Text("Female"),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
@@ -256,40 +420,25 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
                 const SizedBox(height: 10),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(hintText: "Select Batch"),
-                    value: selectedBatchId,
-                    items: batchProvider.bachtList
-                        .map(
-                          (b) => DropdownMenuItem(
-                            value: b.id,
-                            child: Text(b.batchName),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) =>
-                        setState(() => selectedBatchId = value),
-                    validator: (value) => value == null ? 'Select batch' : null,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
                 AppTextField(
                   text: Text('Email').size(14).black(),
                   validation: 'Enter email',
                   inputType: TextInputType.emailAddress,
                   controller: emailController,
+                  autoFill: (value) {
+                    if (!added && emailController.text.contains('@')) {
+                      emailController.text = '${emailController.text}gmail.com';
+                      added = true;
+                    }
+                  },
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 AppButton(
                   color: AppColors.backGround,
                   hight: 0.150,
-                  width: 0.72,
+                  width: 0.920,
                   child: Text('Save').size(16).semiBold().wight(),
                   onTap: () async {
                     if (_formKey.currentState!.validate()) {
