@@ -3,8 +3,10 @@ import 'package:edu_trak/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTextField extends StatefulWidget {
+  double? higet;
+  double? width;
   final Text text;
-  final String validation;
+  String? validation;
   final TextInputType? inputType;
   final ValueChanged<String>? autoFill;
   final TextEditingController? controller;
@@ -13,12 +15,14 @@ class AppTextField extends StatefulWidget {
   AppTextField({
     super.key,
     required this.text,
-    required this.validation,
+    this.validation,
     this.inputType,
     this.autoFill,
     this.controller,
     this.passwordfeild = false,
     this.suffixIcon,
+    this.higet,
+    this.width,
   });
 
   @override
@@ -33,9 +37,9 @@ class _AppTextFieldState extends State<AppTextField> {
     final size = MediaQuery.of(context).size;
     final bool hideText = isPasswordVisible;
     return Container(
-      padding: EdgeInsets.only(left: 10, bottom: 5),
-      height: size.width * 0.150,
-      width: size.width * 0.920,
+      padding: EdgeInsets.only(left: 10),
+      height: widget.higet ?? size.width * 0.150,
+      width: widget.width ?? size.width * 0.920,
 
       decoration: BoxDecoration(
         color: AppColors.textField,

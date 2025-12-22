@@ -7,6 +7,7 @@ import 'package:edu_trak/components/app_popup.dart';
 import 'package:edu_trak/components/app_text_field.dart';
 import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
 import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
+import 'package:edu_trak/models/student_model/student_model.dart';
 
 import 'package:edu_trak/providers/attendance_provider.dart';
 import 'package:edu_trak/providers/profile_image_provider.dart';
@@ -20,14 +21,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AttendancePage extends StatefulWidget {
-  final int batchId;
-  final String batchName;
+  int? batchId;
+  String? batchName;
 
-  const AttendancePage({
-    super.key,
-    required this.batchId,
-    required this.batchName,
-  });
+  AttendancePage({super.key, this.batchId, this.batchName});
 
   @override
   State<AttendancePage> createState() => _AttendancePageState();
@@ -36,6 +33,7 @@ class AttendancePage extends StatefulWidget {
 class _AttendancePageState extends State<AttendancePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController reasonController = TextEditingController();
+  String? dropdounValue;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +43,7 @@ class _AttendancePageState extends State<AttendancePage> {
         children: [
           Column(
             children: [
-              Text(widget.batchName).size(32).blue().bold(),
+              Text(widget.batchName!).size(32).blue().bold(),
               Consumer<StudentProvider>(
                 builder: (context, provider, _) {
                   final batchStudents = provider.studentModelList
@@ -62,23 +60,63 @@ class _AttendancePageState extends State<AttendancePage> {
                 },
               ),
               Text(AppDate.todayDate()).size(14).blue().semiBold(),
+              SizedBox(height: 10),
+              AppCard(
+                color: AppColors.backGround,
+                hight: 50,
+                width: 82,
+                border: Border.all(color: AppColors.backGround),
+                child: DropdownButtonFormField(
+                  hint: Text('Sort by').wight(),
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: InputDecoration(border: InputBorder.none),
+                  dropdownColor: AppColors.backGround,
+                  iconEnabledColor: AppColors.backgroundw,
+                  value: dropdounValue,
+
+                  items: [
+                    DropdownMenuItem(value: 'A-Z', child: Text('A-Z').wight()),
+                    DropdownMenuItem(value: 'Z-A', child: Text('Z-A').wight()),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        dropdounValue = value;
+                      });
+                    }
+                  },
+                ),
+              ),
             ],
           ),
 
           const SizedBox(height: 20),
 
           Expanded(
-            child: Consumer2<StudentProvider, AttendanceProvider>(
-              builder: (context, studentPro, attendancePro, child) {
+            child: Consumer<StudentProvider>(
+              builder: (BuildContext context, studentPro, Widget? child) {
                 final batchStudents = studentPro.studentModelList
                     .where((std) => std.bachId == widget.batchId)
                     .toList();
 
+                if (dropdounValue == 'Z-A') {
+                  batchStudents.sort(
+                    (a, b) => a.fullName.toLowerCase().compareTo(
+                      b.fullName.toLowerCase(),
+                    ),
+                  );
+                } else {
+                  batchStudents.sort(
+                    (a, b) => b.fullName.toLowerCase().compareTo(
+                      a.fullName.toLowerCase(),
+                    ),
+                  );
+                }
                 return ListView.builder(
                   itemCount: batchStudents.length,
                   itemBuilder: (context, index) {
                     final student = batchStudents[index];
-
+                    final attendancePro = context.read<AttendanceProvider>();
                     final currentStatus = attendancePro.attendanceModelList
                         .firstWhere(
                           (att) =>
@@ -95,6 +133,10 @@ class _AttendancePageState extends State<AttendancePage> {
 
                     final status = currentStatus.status;
                     final image = context.watch<ProfileImageProvider>();
+                    if (image.profileImageList.isEmpty) {
+                      return CircularProgressIndicator();
+                    }
+
                     final List<ProfileImageModel> studentImage = image
                         .profileImageList
                         .where((img) => img.id == student.profileImageId)
@@ -207,7 +249,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                           key: _formKey,
                                           child: AppTextField(
                                             controller: reasonController,
-                                            text: const Text('Type reason'),
+                                            text: const Text(
+                                              'Type reason',
+                                            ).blue(),
                                             validation: 'Please type reason',
                                           ),
                                         ),
@@ -231,7 +275,7 @@ class _AttendancePageState extends State<AttendancePage> {
                                             },
                                             width: 0.20,
                                             hight: 0.10,
-                                            child: Text('Ok').wight().bold(),
+                                            child: Text('Ok').blue().bold(),
                                           ),
                                         ],
                                       );

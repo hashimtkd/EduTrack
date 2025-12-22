@@ -89,7 +89,7 @@ class _TimetablePageState extends State<TimetablePage> {
                             ? Colors.black
                             : Colors.white,
                       ),
-                    ).bold().size(selectedButton == 'Today' ? 28 : 20),
+                    ).bold().size(20),
                   ),
                 ),
               ),
@@ -108,7 +108,7 @@ class _TimetablePageState extends State<TimetablePage> {
                             ? Colors.black
                             : Colors.white,
                       ),
-                    ).bold().size(selectedButton == 'Week' ? 28 : 20),
+                    ).bold().size(20),
                   ),
                 ),
               ),

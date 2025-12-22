@@ -17,19 +17,21 @@ class TeacherModelAdapter extends TypeAdapter<TeacherModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TeacherModel(
-      id: fields[0] as int,
+      id: fields[0] as int?,
       name: fields[1] as String,
-      contactNumber: fields[2] as int,
+      contactNumber: fields[2] as String,
       email: fields[3] as String,
       subjectId: fields[4] as int?,
-      profileImageId: fields[5] as int?,
+      profileImageId: fields[7] as int?,
+      qualification: fields[6] as String,
+      profileImagepath: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TeacherModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,6 +43,10 @@ class TeacherModelAdapter extends TypeAdapter<TeacherModel> {
       ..writeByte(4)
       ..write(obj.subjectId)
       ..writeByte(5)
+      ..write(obj.profileImagepath)
+      ..writeByte(6)
+      ..write(obj.qualification)
+      ..writeByte(7)
       ..write(obj.profileImageId);
   }
 

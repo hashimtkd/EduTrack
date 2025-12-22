@@ -27,7 +27,6 @@ class _CreateAccountState extends State<CreateAccount> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: SizedBox(
         height: size.height,
@@ -35,72 +34,79 @@ class _CreateAccountState extends State<CreateAccount> {
         child: Center(
           child: Form(
             key: _formKey,
-            child: Column(
-              children: [
-                const SizedBox(height: 100),
-                Text('Create an account').size(32).blue().semiBold(),
-                const SizedBox(height: 100),
-                AppTextField(
-                  text: const Text('Email or phone number').size(14).black(),
-                  validation: 'Enter email or phone number',
-                  controller: emailController,
-                  autoFill: (value) {
-                    if (!added && emailController.text.contains('@')) {
-                      emailController.text = '${emailController.text}gmail.com';
-                      added = true;
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                AppTextField(
-                  passwordfeild: true,
-                  text: const Text('New password').size(14).black(),
-                  validation: 'Enter new password',
-                  controller: passController,
-                ),
-                const SizedBox(height: 10),
-                AppTextField(
-                  passwordfeild: true,
-                  text: const Text('Confirm Password').size(14).black(),
-                  validation: 'Confirm your password',
-                  controller: confirmController,
-                ),
-                const SizedBox(height: 20),
-                AppButton(
-                  color: AppColors.backGround,
-                  hight: 0.150,
-                  width: 0.72,
-                  child: const Text('Save').size(16).semiBold().wight().wight(),
-                  onTap: () async {
-                    if (!_formKey.currentState!.validate()) return;
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Create an account').size(32).blue().semiBold(),
+                  const SizedBox(height: 50),
+                  AppTextField(
+                    text: const Text('Email or phone number').size(14).black(),
+                    validation: 'Enter email or phone number',
+                    controller: emailController,
+                    autoFill: (value) {
+                      if (!added && emailController.text.contains('@')) {
+                        emailController.text =
+                            '${emailController.text}gmail.com';
+                        added = true;
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    passwordfeild: true,
+                    text: const Text('New password').size(14).black(),
+                    validation: 'Enter new password',
+                    controller: passController,
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    passwordfeild: true,
+                    text: const Text('Confirm Password').size(14).black(),
+                    validation: 'Confirm your password',
+                    controller: confirmController,
+                  ),
+                  const SizedBox(height: 20),
+                  AppButton(
+                    color: AppColors.backGround,
+                    hight: 0.150,
+                    width: 0.72,
+                    child: const Text(
+                      'Save',
+                    ).size(16).semiBold().wight().wight(),
+                    onTap: () async {
+                      if (!_formKey.currentState!.validate()) return;
 
-                    if (passController.text != confirmController.text) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Passwords do not match")),
+                      if (passController.text != confirmController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Passwords do not match"),
+                          ),
+                        );
+                        return;
+                      }
+
+                      final msg = await context.read<UserProvider>().signUp(
+                        emailController.text.trim(),
+                        passController.text.trim(),
                       );
-                      return;
-                    }
 
-                    final msg = await context.read<UserProvider>().signUp(
-                      emailController.text.trim(),
-                      passController.text.trim(),
-                    );
-
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(msg)));
-
-                    if (msg == "Success") {
-                      Navigator.pushReplacement(
+                      ScaffoldMessenger.of(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ],
+                      ).showSnackBar(SnackBar(content: Text(msg)));
+
+                      if (msg == "Success") {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

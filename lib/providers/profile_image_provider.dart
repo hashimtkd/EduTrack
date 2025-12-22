@@ -4,6 +4,9 @@ import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfileImageProvider extends ChangeNotifier {
+  ProfileImageProvider() {
+    getAll();
+  }
   List<ProfileImageModel> _profileImageList = [];
 
   List<ProfileImageModel> get profileImageList => _profileImageList;

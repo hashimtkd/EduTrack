@@ -42,6 +42,7 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
   int? imgId;
   String? temporalyImage;
   int? selectedBatchId;
+  String? seletctedBachName;
   String dob = 'Date of Birth';
   Future<void> selectDate() async {
     DateTime? pickedDate = await showDatePicker(
@@ -63,20 +64,33 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
       (controller) => controller.text.isNotEmpty,
     );
 
+    if (temporalyImage == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please select profile image')));
+      return;
+    }
+
+    final image = ProfileImageModel(profileImage: temporalyImage!);
+    final imgId = await context.read<ProfileImageProvider>().insert(image);
+
     if (emailController.text.isNotEmpty &&
         dob.isNotEmpty &&
         fullNameController.text.isNotEmpty &&
         guardianController.text.isNotEmpty &&
         selectedBatchId != null &&
         contactNumberController.text.isNotEmpty &&
-        addressIsValid) {
+        addressIsValid &&
+        seletctedBachName != null &&
+        temporalyImage != null &&
+        imgId != null) {
       final List<String> address = addressController
           .map((c) => c.text.trim())
           .where((text) => text.isNotEmpty)
           .toList();
 
       final student = StudentModel(
-        fullName: fullNameController.text,
+        fullName: fullNameController.text.firstLetterUppercase(),
         dateOfBirth: dob,
         gender: gender ?? "",
         guardianName: guardianController.text,
@@ -86,6 +100,7 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
         contactNumber: contactNumberController.text,
         email: emailController.text,
         profileImageId: imgId,
+        bachName: seletctedBachName,
       );
 
       Provider.of<StudentProvider>(context, listen: false).insert(student);
@@ -139,12 +154,10 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                                   onTap: () async {
                                     final file =
                                         await ImagePickerHelper.pickFromCamera();
-                                    final image = ProfileImageModel(
-                                      profileImage: file,
-                                    );
-                                    imgId = await context
-                                        .read<ProfileImageProvider>()
-                                        .insert(image);
+                                    setState(() {
+                                      temporalyImage = file;
+                                    });
+
                                     Navigator.of(context).pop();
                                   },
                                   width: 0.50,
@@ -162,12 +175,7 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                                     setState(() {
                                       temporalyImage = file;
                                     });
-                                    final image = ProfileImageModel(
-                                      profileImage: file,
-                                    );
-                                    imgId = await context
-                                        .read<ProfileImageProvider>()
-                                        .insert(image);
+
                                     Navigator.of(context).pop();
                                   },
                                   width: 0.50,
@@ -321,11 +329,17 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                                 (b) => DropdownMenuItem(
                                   value: b.id,
                                   child: Text(b.batchName),
+                                  onTap: () {
+                                    setState(() {
+                                      seletctedBachName = b.batchName;
+                                    });
+                                  },
                                 ),
                               )
                               .toList(),
-                          onChanged: (value) =>
-                              setState(() => selectedBatchId = value),
+                          onChanged: (value) => setState(() {
+                            selectedBatchId = value;
+                          }),
                           validator: (value) => value == null ? 'Batch' : null,
                         ),
                       ),
@@ -380,7 +394,9 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
                   onTap: () async {
                     if (_formKey.currentState!.validate()) {
                       await save();
-                      Navigator.pop(context);
+                      if (temporalyImage != null) {
+                        Navigator.pop(context);
+                      }
                     }
                   },
                 ),

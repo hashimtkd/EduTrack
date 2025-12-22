@@ -67,53 +67,57 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     return Scaffold(
       appBar: AppBar(),
-      resizeToAvoidBottomInset: false,
+
       body: SizedBox(
         height: size.height,
         width: size.width,
         child: Center(
           child: Form(
             key: _formKey,
-            child: Column(
-              children: [
-                const SizedBox(height: 100),
-                Text('Reset password').size(32).blue().semiBold(),
-                const SizedBox(height: 100),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Reset password').size(32).blue().semiBold(),
+                  const SizedBox(height: 50),
 
-                AppTextField(
-                  text: const Text('Email or phone number').size(14).black(),
-                  validation: 'Enter email or phone number',
-                  controller: idController,
-                  autoFill: (value) {
-                    if (!added && idController.text.contains('@')) {
-                      idController.text = '${idController.text}gmail.com';
-                      added = true;
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                AppTextField(
-                  passwordfeild: true,
-                  text: const Text('New password').size(14).black(),
-                  validation: 'Enter new password',
-                  controller: newPassController,
-                ),
-                const SizedBox(height: 10),
-                AppTextField(
-                  passwordfeild: true,
-                  text: const Text('Confirm new password').size(14).black(),
-                  validation: 'Please confirm new password',
-                  controller: confirmPassController,
-                ),
-                const SizedBox(height: 20),
-                AppButton(
-                  color: AppColors.backGround,
-                  hight: 0.150,
-                  width: 0.72,
-                  onTap: resetPassword,
-                  child: const Text('Save').size(16).semiBold().wight().wight(),
-                ),
-              ],
+                  AppTextField(
+                    text: const Text('Email or phone number').size(14).black(),
+                    validation: 'Enter email or phone number',
+                    controller: idController,
+                    autoFill: (value) {
+                      if (!added && idController.text.contains('@')) {
+                        idController.text = '${idController.text}gmail.com';
+                        added = true;
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    passwordfeild: true,
+                    text: const Text('New password').size(14).black(),
+                    validation: 'Enter new password',
+                    controller: newPassController,
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    passwordfeild: true,
+                    text: const Text('Confirm new password').size(14).black(),
+                    validation: 'Please confirm new password',
+                    controller: confirmPassController,
+                  ),
+                  const SizedBox(height: 20),
+                  AppButton(
+                    color: AppColors.backGround,
+                    hight: 0.150,
+                    width: 0.72,
+                    onTap: resetPassword,
+                    child: const Text(
+                      'Save',
+                    ).size(16).semiBold().wight().wight(),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

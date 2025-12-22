@@ -60,3 +60,10 @@ extension AppTextStyle on Text {
     style: (style ?? TextStyle()).copyWith(fontFamily: 'IrishGrover'),
   );
 }
+
+extension StringCapitalization on String {
+  String firstLetterUppercase() {
+    if (isEmpty) return this;
+    return this[0].toUpperCase() + substring(1);
+  }
+}

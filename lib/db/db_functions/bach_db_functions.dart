@@ -14,8 +14,16 @@ class BachDbFunctions {
   }
 
   static Future<List<BatchModel>> getAll() async {
-    final list = box.values.toList().cast<BatchModel>();
-    print(list);
+    List<BatchModel> list = [];
+    for (var key in box.keys) {
+      final model = box.get(key);
+      if (model != null) {
+        model.id = key as int;
+
+        list.add(model);
+      }
+    }
+
     return list;
   }
 }

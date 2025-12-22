@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'dart:io';
-
 import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_card.dart';
 import 'package:edu_trak/components/app_popup.dart';
@@ -56,17 +55,17 @@ class _EditStudentPageState extends State<EditStudentPage> {
   bool isFemale = false;
   String? temporalyImage;
   int? selectedBatchId;
-  int? imgId;
+
   @override
   void initState() {
     super.initState();
 
     if (widget.provider != null) {
-      fullNameController.text = widget.provider!.fullName ?? "";
-      dob = widget.provider!.dateOfBirth ?? "";
-      guardianController.text = widget.provider!.guardianName ?? "";
-      contactNumberController.text = widget.provider!.contactNumber ?? "";
-      emailController.text = widget.provider!.email ?? "";
+      fullNameController.text = widget.provider!.fullName;
+      dob = widget.provider!.dateOfBirth;
+      guardianController.text = widget.provider!.guardianName;
+      contactNumberController.text = widget.provider!.contactNumber;
+      emailController.text = widget.provider!.email;
 
       selectedBatchId = widget.provider!.bachId;
 
@@ -103,6 +102,12 @@ class _EditStudentPageState extends State<EditStudentPage> {
   }
 
   Future<void> update({required int? id}) async {
+    int? newImageId = widget.profileImageId;
+
+    if (temporalyImage != null && temporalyImage!.isNotEmpty) {
+      final image = ProfileImageModel(profileImage: temporalyImage!);
+      newImageId = await context.read<ProfileImageProvider>().insert(image);
+    }
     bool addressIsValid = addressController.any(
       (controller) => controller.text.isNotEmpty,
     );
@@ -122,7 +127,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
 
       final student = StudentModel(
         id: id,
-        fullName: fullNameController.text,
+        fullName: fullNameController.text.firstLetterUppercase(),
         dateOfBirth: dob,
         gender: gender ?? "",
         guardianName: guardianController.text,
@@ -131,13 +136,23 @@ class _EditStudentPageState extends State<EditStudentPage> {
         bachId: selectedBatchId,
         contactNumber: contactNumberController.text,
         email: emailController.text,
-        profileImageId: imgId ?? widget.profileImageId,
+        profileImageId: newImageId,
       );
 
       await Provider.of<StudentProvider>(
         context,
         listen: false,
       ).update(student);
+
+      if (temporalyImage != null &&
+          temporalyImage!.isNotEmpty &&
+          widget.profileImage != null &&
+          widget.profileImageId != null) {
+        await context.read<ProfileImageProvider>().delete(
+          widget.profileImage!,
+          widget.profileImageId,
+        );
+      }
     }
   }
 
@@ -146,7 +161,14 @@ class _EditStudentPageState extends State<EditStudentPage> {
     final batchProvider = context.watch<BachProvider>();
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
+        title: Text('Edit Student').size(32).blue().semiBold(),
+        centerTitle: true,
+      ),
       body: Center(
         child: Form(
           key: _formKey,
@@ -160,16 +182,18 @@ class _EditStudentPageState extends State<EditStudentPage> {
                       backgroundImage:
                           temporalyImage != null && temporalyImage!.isNotEmpty
                           ? FileImage(File(temporalyImage!))
-                          : widget.profileImage != null
-                          ? FileImage(File(widget.profileImage as String))
+                          : widget.profileImage != null &&
+                                widget.profileImage!.isNotEmpty
+                          ? FileImage(File(widget.profileImage!))
                           : null,
+
                       child:
                           (temporalyImage == null || temporalyImage!.isEmpty) &&
-                              widget.profileImage == null
+                              (widget.profileImage == null ||
+                                  widget.profileImage!.isEmpty)
                           ? const Icon(Icons.person, size: 40)
                           : null,
                     ),
-
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -188,18 +212,10 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                   onTap: () async {
                                     final file =
                                         await ImagePickerHelper.pickFromCamera();
-                                    final image = ProfileImageModel(
-                                      profileImage: file,
-                                    );
-                                    await context
-                                        .read<ProfileImageProvider>()
-                                        .delete(
-                                          widget.profileImage!,
-                                          widget.profileImageId,
-                                        );
-                                    imgId = await context
-                                        .read<ProfileImageProvider>()
-                                        .insert(image);
+
+                                    setState(() {
+                                      temporalyImage = file;
+                                    });
 
                                     Navigator.of(context).pop();
                                   },
@@ -215,21 +231,10 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                   onTap: () async {
                                     final file =
                                         await ImagePickerHelper.pickFromGallery();
+
                                     setState(() {
                                       temporalyImage = file;
                                     });
-                                    final image = ProfileImageModel(
-                                      profileImage: file,
-                                    );
-                                    await context
-                                        .read<ProfileImageProvider>()
-                                        .delete(
-                                          widget.profileImage!,
-                                          widget.profileImageId,
-                                        );
-                                    imgId = await context
-                                        .read<ProfileImageProvider>()
-                                        .insert(image);
 
                                     Navigator.of(context).pop();
                                   },

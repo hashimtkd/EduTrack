@@ -15,10 +15,10 @@ import 'package:edu_trak/providers/bach_provider.dart';
 import 'package:edu_trak/providers/profile_image_provider.dart';
 import 'package:edu_trak/providers/student_provider.dart';
 import 'package:edu_trak/providers/subject_provider.dart';
+import 'package:edu_trak/providers/teacher_provider.dart';
 import 'package:edu_trak/providers/time_table_provider.dart';
 import 'package:edu_trak/providers/user_provider.dart';
 import 'package:edu_trak/screens/splash_screen/splash_screen.dart';
-import 'package:edu_trak/screens/teacher_screens/teacher_register_panel.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -82,6 +82,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BachProvider()..getAll()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ProfileImageProvider()..getAll()),
+        ChangeNotifierProvider(create: (_) => TeacherProvider()..getAll()),
       ],
       child: const MyApp(),
     ),
@@ -96,7 +97,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EduTrack',
-      home: TeacherRegisterPanel(),
+      home: SplashScrean(),
     );
   }
 }
