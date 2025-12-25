@@ -4,6 +4,7 @@ import 'package:edu_trak/components/app_bouble.dart';
 import 'package:edu_trak/components/app_card.dart';
 import 'package:edu_trak/components/app_text_field.dart';
 import 'package:edu_trak/db/db_functions/shared_preferences/login_prefs.dart';
+import 'package:edu_trak/models/bach_model/bach_model.dart';
 import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
 import 'package:edu_trak/models/student_model/student_model.dart';
 import 'package:edu_trak/models/teacher_model/teacher_model.dart';
@@ -61,10 +62,7 @@ class _HomePageState extends State<HomePage> {
           .studentModelList
           .where(
             (student) =>
-                student.fullName ==
-                    searchController.text.firstLetterUppercase().trim() ||
-                student.fullName == searchController.text.trim() ||
-                student.fullName == searchController.text,
+                student.fullName.toLowerCase().contains(searchController.text),
           )
           .toList();
     });
@@ -76,10 +74,10 @@ class _HomePageState extends State<HomePage> {
     final TeacherModel? teacher = context
         .watch<TeacherProvider>()
         .currentTeacher;
-    final List imageList = context
+    final imageList = context
         .watch<ProfileImageProvider>()
         .profileImageList
-        .where((img) => img.id == teacher!.profileImageId)
+        .where((img) => img.id == teacher?.profileImageId)
         .toList();
 
     return Scaffold(
@@ -293,8 +291,12 @@ class _HomePageState extends State<HomePage> {
                     itemCount: studentList.length,
                     itemBuilder: (BuildContext context, int index) {
                       final student = studentList[index];
-                      final bach = context.read<BachProvider>().bachtList;
-                      bach.where((b) => student.bachId == b.id).toList();
+                      final batchList = context.read<BachProvider>().bachtList;
+                      final batch = batchList.firstWhere(
+                        (b) => b.id == student.bachId,
+                        orElse: () => BatchModel(id: 0, batchName: 'No Batch'),
+                      );
+
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: AppCard(
@@ -338,11 +340,12 @@ class _HomePageState extends State<HomePage> {
                             title: Text(student.fullName).wight().semiBold(),
                             subtitle: Row(
                               children: [
-                                Text('${bach[index].batchName} ,').wight(),
+                                Text('${batch.batchName}, ').wight(),
                                 SizedBox(width: 10),
                                 Text(student.contactNumber).wight(),
                               ],
                             ),
+
                             onTap: () async {
                               setState(() {
                                 isClickedSearchButton = false;
@@ -351,7 +354,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return StudentProfilePage(index: index);
+                                    return StudentProfilePage(student: student);
                                   },
                                 ),
                               );

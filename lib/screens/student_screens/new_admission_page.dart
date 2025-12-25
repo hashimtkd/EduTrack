@@ -52,11 +52,10 @@ class _NewAdmissionPageState extends State<NewAdmissionPage> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate != null) {
-      setState(() {
-        dob = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-      });
-    }
+    setState(() {
+      dob =
+          "${pickedDate?.day ?? ""}-${pickedDate?.month ?? ""}-${pickedDate?.year ?? ""}";
+    });
   }
 
   Future<void> save() async {

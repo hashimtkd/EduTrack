@@ -7,6 +7,7 @@ import 'package:edu_trak/models/teacher_model/teacher_model.dart';
 import 'package:edu_trak/providers/profile_image_provider.dart';
 import 'package:edu_trak/providers/teacher_provider.dart';
 import 'package:edu_trak/screens/bottomNavigationScreens/you_page.dart';
+import 'package:edu_trak/screens/home_screen/home_page.dart';
 import 'package:edu_trak/utils/app_colors.dart';
 import 'package:edu_trak/utils/app_text_style.dart';
 import 'package:edu_trak/utils/image_picker_helper.dart';
@@ -65,7 +66,14 @@ class _TeacherRegisterPanelState extends State<TeacherRegisterPanel> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return HomePage();
+              },
+            ),
+          ),
           icon: const Icon(Icons.arrow_back),
         ),
         title: Text('Teacher Profile').size(32).blue().semiBold(),

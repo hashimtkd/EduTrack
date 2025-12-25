@@ -7,7 +7,6 @@ import 'package:edu_trak/components/app_popup.dart';
 import 'package:edu_trak/components/app_text_field.dart';
 import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
 import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
-import 'package:edu_trak/models/student_model/student_model.dart';
 
 import 'package:edu_trak/providers/attendance_provider.dart';
 import 'package:edu_trak/providers/profile_image_provider.dart';
@@ -180,7 +179,7 @@ class _AttendancePageState extends State<AttendancePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  StudentProfilePage(index: index),
+                                  StudentProfilePage(student: student),
                             ),
                           ).then((_) => setState(() {}));
                         },

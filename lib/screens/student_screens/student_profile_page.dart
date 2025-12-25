@@ -4,6 +4,7 @@ import 'package:edu_trak/components/app_button.dart';
 import 'package:edu_trak/components/app_card.dart';
 import 'package:edu_trak/models/attendanc_model/attendance_status_model.dart';
 import 'package:edu_trak/models/profile_image_model/profile_image_model.dart';
+import 'package:edu_trak/models/student_model/student_model.dart';
 import 'package:edu_trak/providers/attendance_provider.dart';
 import 'package:edu_trak/providers/profile_image_provider.dart';
 import 'package:edu_trak/providers/student_provider.dart';
@@ -15,9 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StudentProfilePage extends StatefulWidget {
-  final int index;
+  final StudentModel student;
   int? imgId;
-  StudentProfilePage({super.key, required this.index, this.imgId});
+  StudentProfilePage({super.key, required this.student, this.imgId});
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
@@ -41,7 +42,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       body: Center(
         child: Consumer<StudentProvider>(
           builder: (context, provider, child) {
-            final student = provider.studentModelList[widget.index];
+            final student = widget.student;
             final image = context.watch<ProfileImageProvider>();
             final List<ProfileImageModel> studentImage = image.profileImageList
                 .where((img) => img.id == student.profileImageId)
@@ -82,7 +83,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             builder: (BuildContext context) {
                               return EditStudentPage(
                                 id: student.id,
-                                index: widget.index,
+
                                 provider: student,
                                 profileImage: studentImage.isNotEmpty
                                     ? studentImage.first.profileImage

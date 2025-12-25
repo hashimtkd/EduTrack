@@ -18,14 +18,14 @@ import 'package:provider/provider.dart';
 
 class EditStudentPage extends StatefulWidget {
   final StudentModel? provider;
-  final int? index;
+
   final int? id;
   final String? profileImage;
   final int? profileImageId;
   const EditStudentPage({
     super.key,
     required this.provider,
-    required this.index,
+
     required this.id,
     this.profileImage,
     this.profileImageId,
@@ -94,11 +94,10 @@ class _EditStudentPageState extends State<EditStudentPage> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate != null) {
-      setState(() {
-        dob = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-      });
-    }
+    setState(() {
+      dob =
+          "${pickedDate?.day ?? ""}-${pickedDate?.month ?? ""}-${pickedDate?.year ?? ""}";
+    });
   }
 
   Future<void> update({required int? id}) async {
