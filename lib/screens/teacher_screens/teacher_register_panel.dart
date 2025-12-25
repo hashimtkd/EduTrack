@@ -65,18 +65,8 @@ class _TeacherRegisterPanelState extends State<TeacherRegisterPanel> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return HomePage();
-              },
-            ),
-          ),
-          icon: const Icon(Icons.arrow_back),
-        ),
         title: Text('Teacher Profile').size(32).blue().semiBold(),
+        centerTitle: true,
       ),
       body: SizedBox(
         height: size.height,

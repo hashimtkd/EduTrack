@@ -21,15 +21,7 @@ class YouPage extends StatelessWidget {
       return const TeacherRegisterPanel();
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.backGround,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
+      appBar: AppBar(backgroundColor: AppColors.backGround),
       backgroundColor: AppColors.backGround,
 
       body: Center(
