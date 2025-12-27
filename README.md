@@ -1,10 +1,19 @@
-# edu_trak
+# EduTrack - Teacher App
 
-A new Flutter project.
+A Flutter application for teachers to manage:
+- Attendance
+- Admission
+- Timetable
 
-## Getting Started
+## Tech Stack
+- Flutter
+- Firebase
+- Provider
 
-This project is a starting point for a Flutter application.
+## Status
+Teacher app completed.
+Admin and Student apps coming soon.
+
 
 A few resources to get you started if this is your first Flutter project:
 
